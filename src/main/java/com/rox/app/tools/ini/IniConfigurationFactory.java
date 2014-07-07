@@ -22,7 +22,7 @@ public class IniConfigurationFactory {
         BufferedReader reader = null;
 
         try {
-            reader = new BufferedReader(new InputStreamReader(new FileInputStream(confFileName), "gb2312"));
+            reader = new BufferedReader(new InputStreamReader(new FileInputStream(confFileName), "UTF-8"));
             String line;
             Section currentSection = null;
             while((line = reader.readLine()) != null) {
