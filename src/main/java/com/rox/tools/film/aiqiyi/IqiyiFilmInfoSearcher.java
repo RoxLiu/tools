@@ -1,20 +1,19 @@
 package com.rox.tools.film.aiqiyi;
 
 import com.rox.tools.film.FilmInfo;
+import com.rox.tools.film.Searcher;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 
-import java.io.FileInputStream;
-import java.io.IOException;
 import java.net.URLEncoder;
 
 /**
  * Created by Rox on 2017/7/3.
  */
-public class IqiyiFilmInfoSearcher {
-    public static FilmInfo search(String film) {
+public class IqiyiFilmInfoSearcher implements Searcher {
+    public FilmInfo search(String film) {
         try {
             String url = "http://so.iqiyi.com/so/q_" + URLEncoder.encode(film, "UTF-8") + "?source=input&sr=637978315578";
             Document doc = Jsoup.connect(url).timeout(300000).get();
@@ -146,10 +145,17 @@ public class IqiyiFilmInfoSearcher {
 
         }
         //简介
-        Elements e = eIntros.get(1).getElementsByClass("episodeIntro-brief");
-        Element brief = e.get(e.size() - 1);
+        Elements e = eIntros.get(0).getElementsByClass("episodeIntro-brief");
+        if(e.size() > 0) {
+            Element brief = e.get(e.size() - 1);
 
-        info.brief      = brief.child(0).text();
+            info.brief      = brief.child(1).text();
+        } else {
+            e = eIntros.get(0).getElementsByClass("shortWordIntro-brief");
+            if(e.size() > 0) {
+                info.brief      = e.get(e.size() - 1).child(0).text();
+            }
+        }
     }
 
     protected static void extractResultDetail(FilmInfo info, Elements detailList) {
@@ -179,6 +185,7 @@ public class IqiyiFilmInfoSearcher {
     }
 
     public static void main(String[] args) {
-        search("遵义行");
+        FilmInfo info = new IqiyiFilmInfoSearcher().search("毕业季");
+        System.out.println(info);
     }
 }
