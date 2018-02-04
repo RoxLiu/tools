@@ -44,9 +44,13 @@ public class IqiyiFilmInfoSearcher implements Searcher {
         for (Element li : liList) {
 //                String tvname = new String(li.attr("data-widget-searchlist-tvname").getBytes("iso-8859-1"), "UTF-8");
             String tvname = li.attr("data-widget-searchlist-tvname");
-            if(tvname.equals(film)) {
+            String alias = attr(li, "别名:");
+            if(tvname.equals(film) || (alias != null && alias.equals(film))) {
                 try {
-                    info = extractFilmInfo(li);
+                    info = new FilmInfo();
+                    info.name = film;
+
+                    extractFilmInfo(li, info);
                 } catch (Exception e) {
                     e.printStackTrace();
                 }
@@ -57,41 +61,56 @@ public class IqiyiFilmInfoSearcher implements Searcher {
         return info;
     }
 
-    protected static FilmInfo extractFilmInfo(Element element) {
-        FilmInfo info = new FilmInfo();
-        info.name = element.attr("data-widget-searchlist-tvname");
+    protected static String attr(Element li, String key) {
+        Elements infoList = li.getElementsByClass("result_info_cont");
+        for(Element info : infoList) {
+            Elements children = info.children();
+            if(children.size() > 1) {
+                if(key.equals(children.get(0).text())) {
+                    String s = "";
+                    for(int i = 1; i < children.size(); i++) {
+                        if(i > 1) {
+                            s += ",";
+                        }
+                        s += children.get(i).text();
+                    }
 
-        Elements items = element.getElementsByClass("info_item");
+                    return s;
+                }
+            }
+        }
+
+        return null;
+    }
+
+    protected static FilmInfo extractFilmInfo(Element li, FilmInfo info) {
+        info.director = attr(li, "导演:");
+        info.character = attr(li, "主演:");
+        info.age = attr(li, "上映时间:");
+        Elements items = li.getElementsByClass("info_item");
         if(items == null || items.isEmpty()) {
             System.err.println("未找详细介绍：info_item");
             return null;
         }
 
-        Element item = items.get(0);
+        //详情
+        if(items.size() > 1) {
+            Element eInfoItem = items.get(1);
+            Elements eInfoTextList = eInfoItem.getElementsByClass("result_info_txt");
 
-        if(!item.children().isEmpty()) {
-            //导演
-            info.director = items.get(0).child(0).child(1).text();
-
-            //主演
-            String s = "";
-            Elements actors = items.get(0).child(1).children();
-            for(int i = 1; i < actors.size(); i++) {
-                s += actors.get(i).text();
-                if(i < actors.size() - 1) {
-                    s += ",";
-                }
+            if(!eInfoTextList.isEmpty()) {
+                info.brief = eInfoTextList.get(0).text();
             }
-            info.character = s;
         }
 
-        //
-        items = element.getElementsByClass("result_title");
-        Element eDetail = items.get(0).child(0);
-        if(eDetail == null || !eDetail.attr("title").equals(info.name)) {
-            System.err.println("找不到详情链接。");
-        } else {
-            extractDetail(info, eDetail.attr("href"));
+        if(info.brief == null) {
+            items = li.getElementsByClass("result_title");
+            Element eDetail = items.get(0).child(0);
+            if(eDetail == null || !eDetail.attr("title").equals(info.name)) {
+                System.err.println("找不到详情链接。");
+            } else {
+                extractDetail(info, eDetail.attr("href"));
+            }
         }
 
         return info;
@@ -130,16 +149,19 @@ public class IqiyiFilmInfoSearcher implements Searcher {
             for(int j = 0; j < pList.size(); j++) {
                 Element p = pList.get(j);
 
-                switch (p.child(0).text()) {
-                    case "地区：":
-                        info.region     = p.child(1).text();
-                        break;
-                    case "语言：":
-                        info.language   = p.child(1).text();
-                        break;
-                    case "时间：":
-                        info.age        = p.child(1).text();
-                        break;
+                if(p.children().size() > 0) {
+                    switch (p.child(0).text()) {
+                        case "地区：":
+                            info.region     = p.child(1).text();
+                            break;
+                        case "语言：":
+                            info.language   = p.child(1).text();
+                            break;
+                        case "上映时间:":
+                        case "时间：":
+                            info.age        = p.child(1).text();
+                            break;
+                    }
                 }
             }
 
@@ -185,7 +207,7 @@ public class IqiyiFilmInfoSearcher implements Searcher {
     }
 
     public static void main(String[] args) {
-        FilmInfo info = new IqiyiFilmInfoSearcher().search("毕业季");
+        FilmInfo info = new IqiyiFilmInfoSearcher().search("冒牌卧底");
         System.out.println(info);
     }
 }

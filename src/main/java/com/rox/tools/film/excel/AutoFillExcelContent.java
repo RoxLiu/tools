@@ -60,9 +60,9 @@ public class AutoFillExcelContent implements XssfRowHandler, HssfRowHandler {
             return;
         }
 
-        String film = ExcelHelper.getStringCellValue(row.getCell(2));
+        String film = ExcelHelper.getStringCellValue(row.getCell(0));
         if (film == null) {
-            System.err.printf("名称为空\r\n");
+            System.err.println("名称为空");
             return;
         }
 
@@ -93,13 +93,13 @@ public class AutoFillExcelContent implements XssfRowHandler, HssfRowHandler {
             return;
         }
 
-        String film = ExcelHelper.getStringCellValue(row.getCell(2));
+        String film = ExcelHelper.getStringCellValue(row.getCell(1));
         if (film == null) {
-            System.err.printf("名称为空\r\n");
+            System.err.println("名称为空");
             return;
         }
 
-        int col = 10;
+        int col = 17;
         Cell cell = row.getCell(col);
         if(cell == null || ExcelHelper.getStringCellValue(cell) == null) {
             film = film.trim();
@@ -107,6 +107,7 @@ public class AutoFillExcelContent implements XssfRowHandler, HssfRowHandler {
             FilmInfo info = searcher.search(film);
 
             if(info != null) {
+                col = 13;
                 //年代  地区   导演  主演  简介
                 row.createCell(col++).setCellValue(info.age);
                 row.createCell(col++).setCellValue(info.region);
@@ -123,10 +124,12 @@ public class AutoFillExcelContent implements XssfRowHandler, HssfRowHandler {
     public static void main(String[] args) {
         AutoFillExcelContent auto = new AutoFillExcelContent();
         auto.setSearcher(new IqiyiFilmInfoSearcher());
-        auto.fillXlsx(new File("乐视独家.xlsx"));
+        auto.fillXlsx(new File("内容片单（2000小时以上）.xlsx"));
 
+/*
         auto.setSearcher(new LeFilmInfoSearcher());
         auto.fillXlsx(new File("乐视独家.xlsx"));
+*/
 
 /*
         fillInDir("./files");

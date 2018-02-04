@@ -103,7 +103,7 @@ public class ExcelHelper {
             }
 
             Iterator<Sheet> it = workbook.sheetIterator();
-
+            it.next();
             while (it.hasNext()) {
                 XSSFSheet sheet = (XSSFSheet)it.next();
 
