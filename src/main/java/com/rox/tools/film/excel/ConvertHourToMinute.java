@@ -2,19 +2,14 @@ package com.rox.tools.film.excel;
 
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.xssf.usermodel.XSSFRow;
-import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.junit.runners.JUnit4;
 
 import java.math.BigDecimal;
 
 /**
  * Created by Rox on 2017/7/19.
  */
-@RunWith(JUnit4.class)
 public class ConvertHourToMinute {
-    @Test
-    public void testConvert() {
+    public static void main(String[] args) {
         try {
             ExcelHelper.writeXlsx("演唱会共560场.xlsx", new XssfRowHandler() {
                 @Override

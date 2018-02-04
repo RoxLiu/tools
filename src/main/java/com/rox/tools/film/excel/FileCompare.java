@@ -1,7 +1,5 @@
 package com.rox.tools.film.excel;
 
-import org.junit.Test;
-
 import java.text.SimpleDateFormat;
 import java.util.*;
 
@@ -153,7 +151,6 @@ public class FileCompare {
         return cache;
     }
 
-    @Test
     public static void sort() {
         List list = new ArrayList(52);
 
@@ -310,6 +307,4 @@ public class FileCompare {
             System.out.printf("rename %s 晓松奇谈%s第%d期.ts\n", list.get(i), prefix, (i+1));
         }
     }
-
-
 }
