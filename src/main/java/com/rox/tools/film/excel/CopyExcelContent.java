@@ -1,6 +1,7 @@
 package com.rox.tools.film.excel;
 
 import org.apache.poi.ss.usermodel.Cell;
+import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.xssf.usermodel.XSSFRow;
 
 import java.util.HashMap;
@@ -21,9 +22,9 @@ public class CopyExcelContent {
         final Map<String, String> directorCache = new HashMap<>();
 
         try {
-            ExcelHelper.readXlsx(src, new XssfRowHandler() {
+            ExcelHelper.readXlsx(src, new ExcelRowHandler() {
                 @Override
-                public void handleRow(int index, XSSFRow row) {
+                public void handleRow(int index, Row row) {
                     if (row == null) {
                         return;
                     }
@@ -82,9 +83,9 @@ public class CopyExcelContent {
                 }
             });
 
-            ExcelHelper.writeXlsx(dst, new XssfRowHandler() {
+            ExcelHelper.writeXlsx(dst, new ExcelRowHandler() {
                 @Override
-                public void handleRow(int index, XSSFRow row) {
+                public void handleRow(int index, Row row) {
                     Cell c1 = row.getCell(1);
 
                     if (c1 == null) {

@@ -1,7 +1,7 @@
 package com.rox.tools.film.excel;
 
 import org.apache.poi.ss.usermodel.Cell;
-import org.apache.poi.xssf.usermodel.XSSFRow;
+import org.apache.poi.ss.usermodel.Row;
 
 import java.math.BigDecimal;
 
@@ -11,9 +11,9 @@ import java.math.BigDecimal;
 public class ConvertHourToMinute {
     public static void main(String[] args) {
         try {
-            ExcelHelper.writeXlsx("演唱会共560场.xlsx", new XssfRowHandler() {
+            ExcelHelper.writeXlsx("演唱会共560场.xlsx", new ExcelRowHandler() {
                 @Override
-                public void handleRow(int index, XSSFRow row) {
+                public void handleRow(int index, Row row) {
                     try {
 
                         Cell c1 = row.getCell(1);

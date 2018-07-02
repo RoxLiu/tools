@@ -15,11 +15,11 @@ import java.util.Iterator;
  */
 public class ExcelHelper {
 
-    public static void readXlsx(String xlsFile, XssfRowHandler handler) {
+    public static void readXlsx(String xlsFile, ExcelRowHandler handler) {
         readXlsx(new File(xlsFile), handler);
     }
 
-    public static void readXlsx(File xlsFile, XssfRowHandler handler)  {
+    public static void readXlsx(File xlsFile, ExcelRowHandler handler)  {
         InputStream is = null;
         try {
             is = new FileInputStream(xlsFile);
@@ -46,11 +46,11 @@ public class ExcelHelper {
         }
     }
 
-    public static void writeXls(String xlsFile, HssfRowHandler handler)  {
+    public static void writeXls(String xlsFile, ExcelRowHandler handler)  {
         writeXls(new File(xlsFile), handler);
     }
 
-    public static void writeXls(File xlsFile, HssfRowHandler handler) {
+    public static void writeXls(File xlsFile, ExcelRowHandler handler) {
         InputStream is = null;
         try {
             is = new FileInputStream(xlsFile);
@@ -88,11 +88,11 @@ public class ExcelHelper {
         }
     }
 
-    public static void writeXlsx(String xlsFile, XssfRowHandler handler)  {
+    public static void writeXlsx(String xlsFile, ExcelRowHandler handler)  {
         writeXlsx(new File(xlsFile), handler);
     }
 
-    public static void writeXlsx(File xlsFile, XssfRowHandler handler) {
+    public static void writeXlsx(File xlsFile, ExcelRowHandler handler) {
         InputStream is = null;
         try {
             is = new FileInputStream(xlsFile);
@@ -103,7 +103,6 @@ public class ExcelHelper {
             }
 
             Iterator<Sheet> it = workbook.sheetIterator();
-            it.next();
             while (it.hasNext()) {
                 XSSFSheet sheet = (XSSFSheet)it.next();
 
