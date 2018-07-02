@@ -10,7 +10,7 @@ import java.io.IOException;
 
 /**
  * Created by Rox on 2014/7/2.
- * ²âÊÔÀà
+ * æµ‹è¯•ç±»
  */
 public class IniConfigurationFactoryTest {
     @BeforeClass
