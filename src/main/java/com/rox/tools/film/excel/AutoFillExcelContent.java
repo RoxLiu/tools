@@ -1,19 +1,31 @@
 package com.rox.tools.film.excel;
 
 import com.rox.tools.film.FilmInfo;
+import com.rox.tools.film.Loggable;
 import com.rox.tools.film.Searcher;
-import com.rox.tools.film.aiqiyi.IqiyiFilmInfoSearcher;
-import org.apache.poi.hssf.usermodel.HSSFRow;
+import com.rox.tools.film.TitleInfo;
+import com.rox.tools.film.searcher.IqiyiFilmInfoSearcher;
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.Row;
 
 import java.io.File;
+import java.util.Random;
 
 /**
  * Created by Rox on 2017/7/2.
  */
 public class AutoFillExcelContent implements ExcelRowHandler {
     private Searcher searcher;
+    private Loggable log;
+
+    private Random random = new Random();
+
+    public AutoFillExcelContent() {
+    }
+
+    public AutoFillExcelContent(Loggable log) {
+        this.log = log;
+    }
 
     public Searcher getSearcher() {
         return searcher;
@@ -35,7 +47,7 @@ public class AutoFillExcelContent implements ExcelRowHandler {
         }
     }
 
-    protected void fillXls(File xls) {
+    public void fillXls(File xls) {
         try {
             System.out.println("开始处理文件：" + xls.getName());
             ExcelHelper.writeXls(xls, this);
@@ -44,7 +56,7 @@ public class AutoFillExcelContent implements ExcelRowHandler {
         }
     }
 
-    protected void fillXlsx(File xls) {
+    public void fillXlsx(File xls) {
         try {
             System.out.println("开始处理文件：" + xls.getName());
             ExcelHelper.writeXlsx(xls, this);
@@ -54,42 +66,86 @@ public class AutoFillExcelContent implements ExcelRowHandler {
     }
 
     @Override
-    public void handleRow(int index, Row row) {
+    public void handleRow(TitleInfo titleInfo, Row row) {
         if (row == null) {
             return;
         }
 
-        String film = ExcelHelper.getStringCellValue(row.getCell(0));
+        int index = row.getRowNum();
+        String film = ExcelHelper.getStringCellValue(row.getCell(titleInfo.nameColumn));
         if (film == null) {
-            System.err.println("名称为空");
+            println("行【" + index + "】，名称为空。");
             return;
         }
 
-        int col = 17;
-        Cell cell = row.getCell(col);
-        if(cell == null || ExcelHelper.getStringCellValue(cell) == null) {
+        if(needSearch(titleInfo, row)) {
             film = film.trim();
-            System.out.print("查询[" + film + "]........\t\t\t\t");
-            FilmInfo info = searcher.search(film);
+            String category = null;
+            if(titleInfo.categoryColumn > -1) {
+                category = ExcelHelper.getStringCellValue(row.getCell(titleInfo.categoryColumn));
+            }
 
-            if(info != null) {
+            FilmInfo info = searcher.search(film, category);
+
+            if(info != null && info.name != null) {
                 //年代  地区   导演  主演  简介
-                row.createCell(col++).setCellValue(info.age);
-                row.createCell(col++).setCellValue(info.region);
-                row.createCell(col++).setCellValue(info.director);
-                row.createCell(col++).setCellValue(info.character);
-                row.createCell(col++).setCellValue(info.brief);
-                System.out.println("OK!");
+                replaceCell(row, titleInfo.directorColumn, info.director);
+                replaceCell(row, titleInfo.characterColumn, info.character);
+                replaceCell(row, titleInfo.briefColumn, info.brief);
+//                replaceCell(row, col++, info.episode);
+
+                String age = info.age != null? info.age : info.release;
+                replaceCell(row, titleInfo.ageColumn, age);
+                replaceCell(row, titleInfo.regionColumn, info.region);
+                println("行【" + index + "】，查询[" + film + "]........OK");
+//                println(info);
             } else {
-                System.out.println("未能查询到相关信息");
+                println("行【" + index + "】，查询[" + film + "]........未能查询到相关信息");
+            }
+
+            try {
+                Thread.sleep(random.nextInt(5000));
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        } else {
+            println("行【" + index + "】，不需要搜索，跳过");
+        }
+    }
+
+    private static boolean needSearch(TitleInfo titleInfo, Row row) {
+        return (!row.getZeroHeight()) &&
+                (isBlank(row.getCell(titleInfo.directorColumn))
+                || isBlank(row.getCell(titleInfo.characterColumn))
+                || isBlank(row.getCell(titleInfo.briefColumn))
+                || isBlank(row.getCell(titleInfo.ageColumn))
+                || isBlank(row.getCell(titleInfo.regionColumn))
+                );
+    }
+
+    private static boolean isBlank(Cell cell) {
+        return cell == null || ExcelHelper.getStringCellValue(cell) == null || ExcelHelper.getStringCellValue(cell).trim().equals("");
+    }
+
+    private static void replaceCell(Row row, int col, String value) {
+        if(value != null && !value.equals("")) {
+            if(isBlank(row.getCell(col))) {
+                row.createCell(col).setCellValue(value);
             }
         }
     }
 
+    private void println(String s) {
+        System.out.println(s);
+        if(log != null) {
+            log.println(s);
+        }
+    }
     public static void main(String[] args) {
         AutoFillExcelContent auto = new AutoFillExcelContent();
+//        auto.setSearcher(new YoukuFilmInfoSearcher());
         auto.setSearcher(new IqiyiFilmInfoSearcher());
-        auto.fillXlsx(new File("5 内容片单（2000小时以上）.xlsx"));
+        auto.fillXlsx(new File("./files/iQIYI 授权IPTV纪录片单to四川有线20180711.xlsx"));
 
 /*
         auto.setSearcher(new LeFilmInfoSearcher());

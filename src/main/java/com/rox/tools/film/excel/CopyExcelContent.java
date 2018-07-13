@@ -1,8 +1,8 @@
 package com.rox.tools.film.excel;
 
+import com.rox.tools.film.TitleInfo;
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.Row;
-import org.apache.poi.xssf.usermodel.XSSFRow;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -24,7 +24,7 @@ public class CopyExcelContent {
         try {
             ExcelHelper.readXlsx(src, new ExcelRowHandler() {
                 @Override
-                public void handleRow(int index, Row row) {
+                public void handleRow(TitleInfo title, Row row) {
                     if (row == null) {
                         return;
                     }
@@ -85,7 +85,7 @@ public class CopyExcelContent {
 
             ExcelHelper.writeXlsx(dst, new ExcelRowHandler() {
                 @Override
-                public void handleRow(int index, Row row) {
+                public void handleRow(TitleInfo title, Row row) {
                     Cell c1 = row.getCell(1);
 
                     if (c1 == null) {

@@ -1,4 +1,4 @@
-package com.rox.tools.film.aiqiyi;
+package com.rox.tools.film.searcher;
 
 import com.rox.tools.film.FilmInfo;
 import com.rox.tools.film.Searcher;
@@ -13,7 +13,7 @@ import java.net.URLEncoder;
  * Created by Rox on 2017/7/3.
  */
 public class IqiyiFilmInfoSearcher implements Searcher {
-    public FilmInfo search(String film) {
+    public FilmInfo search(String film, String category) {
         try {
             String url = "http://so.iqiyi.com/so/q_" + URLEncoder.encode(film, "UTF-8") + "?source=input&sr=637978315578";
             Document doc = Jsoup.connect(url).timeout(300000).get();
@@ -207,7 +207,7 @@ public class IqiyiFilmInfoSearcher implements Searcher {
     }
 
     public static void main(String[] args) {
-        FilmInfo info = new IqiyiFilmInfoSearcher().search("冒牌卧底");
+        FilmInfo info = new IqiyiFilmInfoSearcher().search("冒牌卧底", null);
         System.out.println(info);
     }
 }

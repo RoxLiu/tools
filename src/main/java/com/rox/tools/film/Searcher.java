@@ -7,5 +7,5 @@ package com.rox.tools.film;
  * @Description: <pre>搜索接口</pre>
  ************************************************************/
 public interface Searcher {
-    FilmInfo search(String film);
+    FilmInfo search(String film, String category);
 }

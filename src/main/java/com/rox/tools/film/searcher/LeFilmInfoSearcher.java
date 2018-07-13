@@ -1,4 +1,4 @@
-package com.rox.tools.film.le;
+package com.rox.tools.film.searcher;
 
 import com.rox.tools.film.FilmInfo;
 import com.rox.tools.film.Searcher;
@@ -13,7 +13,7 @@ import java.net.URLEncoder;
  * Created by Rox on 2017/7/3.
  */
 public class LeFilmInfoSearcher implements Searcher {
-    public FilmInfo search(String film) {
+    public FilmInfo search(String film, String category) {
         try {
             String encode = URLEncoder.encode(film, "UTF-8");
             String url = "http://so.le.com/s?wd=" + encode + "&from=pc&ref=click&click_area=search_button&query=" + encode + "&is_default_query=0&module=suggest_list&eid=199499326957551507&experiment_id=104%3A0&is_trigger=1";
@@ -138,7 +138,7 @@ public class LeFilmInfoSearcher implements Searcher {
     }
 
     public static void main(String[] args) {
-        FilmInfo info = new LeFilmInfoSearcher().search("一粒红尘");
+        FilmInfo info = new LeFilmInfoSearcher().search("一粒红尘", null);
 
         System.out.println(info);
     }

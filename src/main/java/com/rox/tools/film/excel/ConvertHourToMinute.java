@@ -1,5 +1,6 @@
 package com.rox.tools.film.excel;
 
+import com.rox.tools.film.TitleInfo;
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.Row;
 
@@ -13,7 +14,7 @@ public class ConvertHourToMinute {
         try {
             ExcelHelper.writeXlsx("演唱会共560场.xlsx", new ExcelRowHandler() {
                 @Override
-                public void handleRow(int index, Row row) {
+                public void handleRow(TitleInfo info, Row row) {
                     try {
 
                         Cell c1 = row.getCell(1);
